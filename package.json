@@ -1,0 +1,19 @@
+{
+  "name": "online-out-patient-management-system",
+  "version": "1.0.0",
+  "description": "A Hospital Manages the details of its doctors and out-patients using an online ",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start":"npx nodemon index.js"
+  },
+  "author": "Prince Dubey",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.18.2",
+    "express-session": "^1.17.3",
+    "jsonwebtoken": "^9.0.0",
+    "mongoose": "^7.2.0",
+    "passport": "^0.6.0",
+    "passport-jwt": "^4.0.1"
+  }
+}
