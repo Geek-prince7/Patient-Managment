@@ -9,7 +9,7 @@ const options={
 }
 passport.use('doctor-jwt',new jwtStrategy(options,async(payload,done)=>{
     try {
-        const doctor=await Doctor.findById(payload.sub)
+        const doctor=await Doctor.findById(payload._id)
         if(doctor){
             return done(null,doctor)
         }

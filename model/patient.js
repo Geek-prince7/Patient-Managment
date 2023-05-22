@@ -11,8 +11,12 @@ const patientSchema=new mongoose.Schema({
         required:true,
         unique:true
     },
-    age:{
+    password:{
         type:String,
+        required:true
+    },
+    age:{
+        type:Number,
         require:true
     },
     phone_no:{
