@@ -2,7 +2,26 @@ const express=require('express')
 const router=express.Router()
 const jwt=require('jsonwebtoken')
 const Doctor=require('../../model/doctors')
-const specialization=require('../../model/specilization')
+const slot=require('../../model/slot')
+const passport=require('passport')
+
+
+// Doctor authentication middleware
+const authenticateDoctor = (req, res, next) => {
+    passport.authenticate('doctor-jwt', { session: false }, (err, doctor, info) => {
+      if (err) {
+        return res.status(500).json({ message: 'Server error' });
+      }
+      if (!doctor) {
+        return res.status(401).json({ message: 'Unauthorized' });
+      }
+      // Authentication successful, proceed to the next middleware or route handler
+      req.doctor = doctor; // Store the authenticated doctor in the request object
+      next();
+    })(req, res, next);
+  };
+
+  
 router.get('/',(req,resp)=>{
     resp.status(200).json({
         code:1000,
@@ -13,7 +32,7 @@ router.get('/',(req,resp)=>{
 /** --------------------- Register new doctor ------------------------------------ */
 router.post('/register',async(req,resp)=>{
     try {
-        const doctor=await Doctor.create({email:req.body.email,name:req.body.name,password:req.body.password,experience:req.body.experience,speciality:req.body.speciality})
+        const doctor=await Doctor.create({email:req.body.email,name:req.body.name,password:req.body.password,experience:req.body.experience,speciality:req.body.speciality,slot:req.body.slot})
         resp.status(200).json({
             code:1000,
             message:'success',
@@ -51,6 +70,27 @@ router.post('/login',async(req,resp)=>{
             }
         })
         
+        
+    } catch (error) {
+        console.log(error)
+        return resp.status(500).json({
+            code:1001,
+            message:"internal server error"
+        })
+        
+    }
+})
+
+
+
+router.get('/info',authenticateDoctor,async(req,resp)=>{
+    try {
+        let doctor=await Doctor.findById(req.doctor._id).select('-password -createdAt -updatedAt')
+        return resp.status(200).json({
+            code:1000,
+            message:'success',
+            data:doctor
+        })
         
     } catch (error) {
         console.log(error)

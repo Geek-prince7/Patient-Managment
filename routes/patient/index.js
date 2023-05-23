@@ -2,6 +2,25 @@ const express=require('express')
 const router=express.Router()
 const jwt=require('jsonwebtoken')
 const Patient=require('../../model/patient')
+const passport = require('passport')
+
+
+// Doctor authentication middleware
+const authenticatePatient = (req, res, next) => {
+    passport.authenticate('patient-jwt', { session: false }, (err, patient, info) => {
+      if (err) {
+        return res.status(500).json({ message: 'Server error' });
+      }
+      if (!patient) {
+        return res.status(401).json({ message: 'Unauthorized' });
+      }
+      // Authentication successful, proceed to the next middleware or route handler
+      req.patient = patient; // Store the authenticated doctor in the request object
+      next();
+    })(req, res, next);
+  };
+  
+
 router.get('/',(req,resp)=>{
     resp.status(200).json({
         code:1000,
@@ -56,6 +75,24 @@ router.post('/login',async(req,resp)=>{
         
     } catch (error) {
         console.log(error)
+        return resp.status(500).json({
+            code:1001,
+            message:"internal server error"
+        })
+        
+    }
+})
+
+router.get('/info',authenticatePatient,async(req,resp)=>{
+    try {
+        let patient=await Patient.findById(req.patient._id).select('-password')
+        return resp.status(200).json({
+            code:1000,
+            message:'success',
+            data:patient
+        })
+        
+    } catch (error) {
         return resp.status(500).json({
             code:1001,
             message:"internal server error"

@@ -22,6 +22,11 @@ const doctorSchema=new mongoose.Schema({
     experience:{
         type:String,
         require:true
+    },
+    slot:{
+        type:mongoose.Schema.Types.ObjectId,
+        ref:'slots',
+        required:true
     }
 },{
     timestamps:true

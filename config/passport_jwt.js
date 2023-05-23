@@ -9,8 +9,9 @@ const options={
 }
 passport.use('doctor-jwt',new jwtStrategy(options,async(payload,done)=>{
     try {
-        const doctor=await Doctor.findById(payload._id)
+        let doctor=await Doctor.findOne({email:payload.sub})
         if(doctor){
+            console.log('i am here')
             return done(null,doctor)
         }
         return done(null,false)
@@ -25,7 +26,7 @@ passport.use('doctor-jwt',new jwtStrategy(options,async(payload,done)=>{
 
 passport.use('patient-jwt',new jwtStrategy(options,async(payload,done)=>{
     try {
-        const patient=await Patient.findById(payload.sub)
+        let patient=await Patient.findOne({email:payload.sub})
         if(patient){
             return done(null,patient)
         }
