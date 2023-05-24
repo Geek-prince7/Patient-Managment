@@ -88,5 +88,27 @@ router.post('/new',authenticatePatient , async (req, res) => {
     }
   });
 
+
+  /** ---------------get all apppointment of a patient ------------------ */
+  router.get('/all',authenticatePatient,async(req,resp)=>{
+    try {
+      let appointments=await Appointment.find({patient:req.patient})
+      return resp.status(200).json({
+        code:1000,
+        message:'success',
+        data:appointments
+      })
+
+      
+    } catch (error) {
+      console.log(error)
+        return resp.status(500).json({
+            code:1001,
+            message:"internal server error"
+        })
+      
+    }
+  })
+
   module.exports=router
   

@@ -52,6 +52,7 @@ router.post('/register',async(req,resp)=>{
 /** ----------------------Patient login -------------------------------------------- */
 router.post('/login',async(req,resp)=>{
     try {
+        console.log(req.body)
         const patient=await Patient.findOne({email:req.body.email})
         if(!patient || patient.password!=req.body.password){
             return resp.status(401).json({

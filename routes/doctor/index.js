@@ -101,4 +101,25 @@ router.get('/info',authenticateDoctor,async(req,resp)=>{
         
     }
 })
+
+/** ------------------get all doctors -------------------- */
+router.get('/all',async(req,resp)=>{
+    try {
+        let doctors=await Doctor.find().select('-password -email')
+        return resp.status(200).json({
+            code:1000,
+            message:'success',
+            data:doctors
+        })
+        
+    } catch (error) {
+        console.log(error)
+        return resp.status(500).json({
+            code:1001,
+            message:"internal server error"
+        })
+        
+    }
+
+})
 module.exports=router
