@@ -8,5 +8,5 @@ const specializationSchema=new mongoose.Schema({
     },
 })
 
-const specialization=mongoose.model('specialization',specializationSchema)
+const specialization=mongoose.model('specializations',specializationSchema)
 module.exports=specialization

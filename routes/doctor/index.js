@@ -105,7 +105,7 @@ router.get('/info',authenticateDoctor,async(req,resp)=>{
 /** ------------------get all doctors -------------------- */
 router.get('/all',async(req,resp)=>{
     try {
-        let doctors=await Doctor.find().select('-password -email')
+        let doctors=await Doctor.find().select('-password -email').populate('speciality')
         return resp.status(200).json({
             code:1000,
             message:'success',

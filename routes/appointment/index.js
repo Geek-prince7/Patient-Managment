@@ -23,7 +23,12 @@ const authenticatePatient = (req, res, next) => {
 // Add Appointment API Route
 router.post('/new',authenticatePatient , async (req, res) => {
     try {
-      const { doctorId, appointmentTime,appointmentDate } = req.body;
+      Appointment.uploadImg(req,resp,async(error)=>{
+        if(error){
+          console.log('multer error',error)
+          return resp.status(500).json({code:1001,message:'internal server error'})
+        }
+        const { doctorId, appointmentTime,appointmentDate } = req.body;
   
       // Find the doctor by ID and populate the slot field
       const doctor = await Doctor.findById(doctorId).populate('slot');
@@ -68,20 +73,28 @@ router.post('/new',authenticatePatient , async (req, res) => {
       ) {
         return res.status(400).json({ message: 'Invalid appointment time' });
       }
+      let prescription=Appointment.IMAGE_PATH+'/'+req.file.filename
   
       // Create the appointment
-      const appointment = new Appointment({
+      const appointment = await Appointment.create({
         appointmentId:id,
         doctor: doctorId,
         patient: req.patient._id,
         appointmentTime:appointmentTime,
-        appointmentDate:appointmentDate
-      });
+        appointmentDate:appointmentDate,
+        patient_name:req.body.patient_name,
+        patient_phone:req.body.patient_phone,
+        prescription:prescription
+
+      })
   
       // Save the appointment
-      const savedAppointment = await appointment.save();
+      const savedAppointment = await (await appointment.populate('doctor','name')).populate('patient','name phone_no email')
   
       res.status(201).json({code:1000,data:savedAppointment});
+
+      })
+      
     } catch (error) {
       console.error('Error creating appointment:', error);
       res.status(500).json({code:1001,message: 'An error occurred' });
@@ -92,7 +105,7 @@ router.post('/new',authenticatePatient , async (req, res) => {
   /** ---------------get all apppointment of a patient ------------------ */
   router.get('/all',authenticatePatient,async(req,resp)=>{
     try {
-      let appointments=await Appointment.find({patient:req.patient})
+      let appointments=await Appointment.find({patient:req.patient}).populate('patient','name phone_no email').populate('doctor','name speciality experience').sort({createdAt:-1})
       return resp.status(200).json({
         code:1000,
         message:'success',

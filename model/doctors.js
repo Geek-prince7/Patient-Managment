@@ -17,7 +17,7 @@ const doctorSchema=new mongoose.Schema({
     },
     speciality:{
         type:mongoose.Schema.Types.ObjectId,
-        ref:'specialization'
+        ref:'specializations'
     },
     experience:{
         type:String,
